@@ -9,7 +9,7 @@ import ScriptTag from 'react-script-tag';
 import $ from 'jquery'; 
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation, useHistory, useParams } from 'react-router-dom'
-import * as faceapi from 'face-api.js'
+
 import VideocamOffIcon from '@material-ui/icons/VideocamOff';
 import VideocamIcon from '@material-ui/icons/Videocam';
 import MicIcon from '@material-ui/icons/Mic';
@@ -29,6 +29,9 @@ import { makeStyles } from '@material-ui/core';
 
 import PhoneDisabledIcon from '@material-ui/icons/PhoneDisabled';
 import PhoneIcon from '@material-ui/icons/Phone';
+import * as faceapi from 'face-api.js'
+import * as hark from 'hark';
+
 const Demo = props => (
   <ScriptTag type="text/javascript" defer src="/client/src/components/face-api.min.js" />
 )
@@ -86,6 +89,12 @@ function Call() {
     const endPoint = 'http://localhost:5000';
     const [loading, setLoading] = useState(true);
     const [secondLoading, setSecondLoading] = useState(true);
+
+    const [candidateEmotion, setCandidateEmotion] = useState([]);
+    var scoredEmotions = [];
+
+    var ScoresArrayForMean= [];
+    const [candidateScore, setCandidateScore] = useState();
     let history_2 = useHistory();
     var userName;
 
@@ -266,22 +275,61 @@ function Call() {
       setOpen(false);
     };
 
-    useEffect(() => {
-      startVideo()
-    }, [])
+    // useEffect(() => {
+    //   startVideo()
+    // }, [])
 
 
+      useEffect(() => {
+        const loadModels = async () => {
+          const MODEL_URL = process.env.PUBLIC_URL + '/models';
+          Promise.all([
+            faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+            faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+            faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+            faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
+          ]).then(startVideo);
+        }
+        loadModels()
+      }, [])
 
-    function startVideo() {
-      navigator.getUserMedia(
-        { video: {} },
-        stream => videoRef.current.srcObject = stream,
-        err => console.error(err)
-      )
-    }
+      function startVideo() {
+        navigator.getUserMedia(
+          { video: {} },
+          stream => videoRef.current.srcObject = stream,
+          err => console.error(err)
+        )
+      }
 
 
-  
+      const emotionDetection = () => {
+        // var options = {}
+        // var speechEvents = hark(stream, options)
+        // speechEvents.on('speaking', function() {
+          setInterval(async () => {
+            console.log("Hark")
+            const detections = await faceapi.detectAllFaces(videoRef.current, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
+            let values = detections[0]
+            let emotions = values?.expressions
+            let sortedEmotions = emotions?.asSortedArray()
+            if (typeof sortedEmotions !== 'undefined') {
+              let dominantEmotion = sortedEmotions[0]
+              console.log(dominantEmotion)
+              if (dominantEmotion.expression == 'angry' || dominantEmotion.expression == 'disgusted' || dominantEmotion.expression == 'fearful'
+                || dominantEmotion.expression == 'sad' || dominantEmotion.expression == 'surprised') {
+                  dominantEmotion.score = 0 
+                  ScoresArrayForMean.push(0)               
+              }
+              else if (dominantEmotion.expression == 'happy' || dominantEmotion.expression == 'neutral') {
+                dominantEmotion.score = 5
+                ScoresArrayForMean.push(5)
+              }
+              scoredEmotions.push(dominantEmotion)
+            }
+          }, 1000)
+        // }) 
+      }
+
     function acceptCall() {
       console.log("I got here") 
       setCallAccepted(true);
@@ -322,29 +370,13 @@ function Call() {
     if (callAccepted) {
       PartnerVideo = (
         <div>
-          <video className= "partnerVideo" playsInline  ref={videoRef} autoPlay />
-          
+          <video className= "partnerVideo" playsInline  ref={videoRef} autoPlay onPlay={emotionDetection} />
         </div>
       );
     }
   
     let incomingCall;
     if (receivingCall) {
-      // incomingCall = (
-      //   // <div className = "incomingCall" >
-      //   //   <div className="header">
-      //   //     <h1>{isAdmin ? "Interviewer" : "Candidate"} is calling you</h1>
-      //   //   </div>
-      //   //   <div className="buttons">
-      //   //     <button className="left__button" onClick={acceptCall}>Accept</button>
-      //   //     <button className="right__button" onClick={rejectCall}>Reject</button>
-      //   //   </div>
-      //   // </div>
-       
-      //   <div class="content-center">
-      //     <div class="pulse"> <i class="fas fa-phone fa-2x" onClick={acceptCall} ></i> </div>
-      // </div>
-      // )
       incomingCall = (
           <div className= "ic__main">
 
@@ -427,8 +459,17 @@ function Call() {
     var playStop_btn_class = enableVideo ? "fas fa-video" : "stop fas fa-video-slash";
 
     const reloadVideo= () => {
+      setCandidateEmotion(scoredEmotions)
+      const happy = 0;
+      const angry = 0;
+      const disgusted = 0;
+      const fearful = 0;
+      const sad = 0;
+      const surprised = 0;
+      const neutral = 0;
+
+      history.push('/admin')
       if(isAdmin){
-        history.push('/admin')
         window.location.reload(false);
       }
       else if (isLogged){

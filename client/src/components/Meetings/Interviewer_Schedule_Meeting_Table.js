@@ -373,6 +373,7 @@ export default function Interviewer_Schedule_Meeting_Table({user, meetingsReceiv
       console.log("ending date :",ed)
       console.log("current date :",cd)
       console.log("starting date :",sd)
+      
       if(cd < sd){
         setSuccess("")
         setError(" You can't Start meeting before allocated day!")
@@ -385,27 +386,32 @@ export default function Interviewer_Schedule_Meeting_Table({user, meetingsReceiv
       }
       if((cd <= ed) && (cd >= sd)){
 
+        console.log("Meeting start Date",meeting.start_date);
+        console.log("Meeting start Date in moment",moment(meeting?.start_date, 'YYYY-MM-DD hh:mm:ss').format('MM-DD-YYYY'));
         const StringSDate = meeting.start_date.toString();
         const startDate = new Date(meeting?.start_date).getDate();
         const startTimeHours = new Date(meeting?.start_time).getHours();
         const startTimeMins = new Date(meeting?.start_time).getMinutes();
         const startTimeSecs = new Date(meeting?.start_time).getSeconds();
-        const newsd = new Date(StringSDate);
-        newsd.setDate(startDate);
+        let newsd = new Date(StringSDate);
+        newsd.setDate(startDate);       
+        let newsd2 = new Date(newsd.getTime() - (5 * 60 * 60 * 1000)) //because we were saving start_date and expiry_date by adding 5 hours
+
 
         const StringEDate = meeting.expiry_date.toString();
         const expiryDate = new Date(meeting?.expiry_date).getDate();
         const expiryTimeHours = new Date(meeting?.expiry_time).getHours();
         const expiryTimeMins = new Date(meeting?.expiry_time).getMinutes();
         const expiryTimeSecs = new Date(meeting?.expiry_time).getSeconds();
-        const newed = new Date(StringEDate);
-        newed.setDate(expiryDate);
+        let newed = new Date(StringEDate)
+        newed.setDate(expiryDate)
+        let newed2 = new Date(newed.getTime() - (5 * 60 * 60 * 1000)) //because we were saving start_date and expiry_date by adding 5 hours
         
         
         //stating HH to hh will give you 12h format
-        const st = moment(newsd).set({h: startTimeHours, m: startTimeMins, s: startTimeSecs}).format('DD-MM-YYYY HH:mm:ss')
+        const st = moment(newsd2).set({h: startTimeHours, m: startTimeMins, s: startTimeSecs}).format('DD-MM-YYYY HH:mm:ss')
         const ct = moment(fullDateNow).format('DD-MM-YYYY HH:mm:ss');
-        const et = moment(newed).set({h: expiryTimeHours, m: expiryTimeMins, s: expiryTimeSecs}).format('DD-MM-YYYY HH:mm:ss')
+        const et = moment(newed2).set({h: expiryTimeHours, m: expiryTimeMins, s: expiryTimeSecs}).format('DD-MM-YYYY HH:mm:ss')
      
 
         console.log("Starting Time Date", st)

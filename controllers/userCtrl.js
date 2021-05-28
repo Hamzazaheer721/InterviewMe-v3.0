@@ -522,7 +522,13 @@ const userCtrl = {
             expiry_date = new Date(newDateExpiry.getTime() + (5 * 60 * 60 * 1000)) //converting into pakistani timezone
             // console.log("Expiry date after: ", expiry_date)
 
+            // const newStartTime = new Date(start_time)
+            // start_time = new Date(newStartTime.getTime() + (5 * 60 * 60 * 1000)) //converting into pakistani timezone
+            // // console.log("Start date after: ", start_date)
 
+            // const newExpiryTime = new Date(expiry_time)
+            // expiry_time = new Date(newExpiryTime.getTime() + (5 * 60 * 60 * 1000)) //converting into pakistani timezone
+           
             const passwordHash = await bcrypt.hash(password, 12);
             
             // const isMatch = await bcrypt.compare(password, user.password);  //for comparing password
