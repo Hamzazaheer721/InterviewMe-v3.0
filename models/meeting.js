@@ -46,6 +46,10 @@ const meetingSchema = new mongoose.Schema({
     joined: {
         type: Number,
         default: 0 //0 for not joined, 1 for joined
+    },
+    ended:{
+        type: Number,
+        default: 0
     }
 }, {
     timestamps: true

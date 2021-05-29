@@ -303,8 +303,9 @@ function Call() {
 
 
       const emotionDetection = () => {
-        // var options = {}
-        // var speechEvents = hark(stream, options)
+        var options = {}
+        var speechEvents = hark(stream, options)
+        if (user?.role === 0){
         // speechEvents.on('speaking', function() {
           setInterval(async () => {
             console.log("Hark")
@@ -329,6 +330,7 @@ function Call() {
           }, 1000)
         // }) 
       }
+    }
 
     function acceptCall() {
       console.log("I got here") 
@@ -458,26 +460,40 @@ function Call() {
     var muteUnmute_btn_class = mute ? "fas fa-microphone" : "unmute fas fa-microphone-slash";
     var playStop_btn_class = enableVideo ? "fas fa-video" : "stop fas fa-video-slash";
 
-    const reloadVideo= () => {
-      setCandidateEmotion(scoredEmotions)
-      const happy = 0;
-      const angry = 0;
-      const disgusted = 0;
-      const fearful = 0;
-      const sad = 0;
-      const surprised = 0;
-      const neutral = 0;
 
-      history.push('/admin')
-      if(isAdmin){
+    const sendEmotionsArray = async(emotionArrayToSend, meetingId) =>{
+      setLoading(true);
+      await axios.post("/user/add-report",{emotionArrayToSend : scoredEmotions, meetingId}).then((res)=>{
+        alert(res.data.msg)
+        setLoading(false)
+        //pushin after saving
+        // history.push('/candidate')
+        history.push('/')
         window.location.reload(false);
-      }
-      else if (isLogged){
-        history.push('/candidate')
-        window.location.reload(false);
-      }
+        
+      }).catch((err) => {
+        alert(err.response.data.msg)
+      });
+    };
+
+    const reloadVideo= () => {
       
-    }
+      if (isLogged){
+        setCandidateEmotion(scoredEmotions)
+        const emotionArrayToSend = scoredEmotions;
+        const meetingId = id;
+        sendEmotionsArray(emotionArrayToSend, meetingId)
+      }
+
+      if(isAdmin){
+        // history.push('/admin')
+        history.push('/')
+        window.location.reload(false);
+      }
+
+     
+      
+    } 
 
 
     return (
@@ -562,8 +578,7 @@ function Call() {
                       <i  class="fas fa-sign-out-alt"></i>
                       {/* <span class= "leave__meeting" onClick = {()=> window.location.reload(false); }> Leave Meeting</span> */}
                       <span class= "leave__meeting"  > Leave Meeting</span>
-                    {/* </Link> */}
-                    
+                    {/* </Link> */}        
                 </div>
           </div>
         </div>

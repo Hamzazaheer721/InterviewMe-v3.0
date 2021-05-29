@@ -19,6 +19,7 @@ const Post = require("../models/post.model.js")
 const Project = require("../models/project.model.js")
 const Company = require("../models/company.model.js")
 const Meeting = require("../models/meeting.js")
+const Report = require("../models/report.js");
 const sendEmailToCandidate = require("./sendMailToCandidate")
 
 const client = new OAuth2(process.env.MAILING_SERVICE_CLIENT_ID)
@@ -1787,6 +1788,233 @@ const userCtrl = {
             console.log(err)
             return res.status(500).json({msg: err.message})
         }
+    },
+    addreport_via_meeting_id: async (req, res) =>{
+        try {
+            console.log("add-report_via_meeting_id");
+            console.log("The body is ", req.body)
+            const meetingId = req.body.meetingId;
+            const emotionArrayToSend = req.body.emotionArrayToSend;
+
+            //Emotions Section
+            let angry = 0;
+            let happy = 0;
+            let neutral = 0;
+            let fearful = 0;
+            let disgusted = 0;
+            let surprised = 0;
+
+            let score = 0;
+            let emotionsArrayLength = emotionArrayToSend?.length;
+            for ( i = 0 ; i< emotionArrayToSend?.length; i++){
+                const ea = emotionArrayToSend[i];
+                console.log("Emotions array at index")
+                if (ea.expression === "neutral"){
+                    neutral = neutral + 1;
+                    score = score + 1;
+                }
+                if (ea.expression === "happy"){
+                    happy = happy + 1;
+                    score = score + 1;
+                }
+                if (ea.expression === "surprised"){
+                    surprised = surprised + 1;
+                    score = score + 0.5;
+                }
+                if (ea.expression === "fearful"){
+                    fearful = fearful + 1;
+                }
+                if (ea.expression === "disgusted"){
+                    disgusted = disgusted + 1;
+                }
+                if (ea.expression === "angry"){
+                    angry = angry + 1;
+                }
+            }
+            // emotions Score
+            let emotions_score = (score/emotionsArrayLength) * 15;
+            let emotions_percentage = (score/emotionsArrayLength) * 100;
+
+            //chartData
+            let chartData = [
+                ['Task', 'Hours per Day'],
+                ['Happy', happy],
+                ['Neutral', neutral],
+                ['Angry', angry],
+                ['Surprised', surprised],
+                ['Fearful', fearful],
+                ['Disgusted', disgusted]
+            ]
+
+            //printing chartData, score and percentage of emotions
+            console.log(chartData);
+            console.log(emotions_score);
+            console.log(emotions_percentage);
+
+
+            //Quiz Score Section
+            let quiz_percentage;
+            let meeting = await Meeting.findOne({_id: mongoose.Types.ObjectId(req.body.meetingId)}).populate('madeBy');
+                if(!meeting) res.status(400).json({msg: "Meeting not Found"});
+            let pinForResult = meeting?.pin;
+            let emailForResult =  meeting?.candidate_user_email;
+            
+            const check = await result.findOne({ pin: pinForResult, email: emailForResult }).exec();
+                if (!check) {
+                    quiz_percentage = 0; 
+                }
+                else{
+                    quiz_percentage = parseInt(check?.score);
+ 
+                }
+            
+            //quiz_percentage
+            console.log("Quiz Percentage: ", quiz_percentage)
+
+
+            //CV section
+            let cv_score;
+            const user = await Users.findOne({email: emailForResult}).exec();
+                if(!user){
+                    cv_score = 0;
+                }
+            const candidate = await Candidate.findOne({user: mongoose.Types.ObjectId(user?._id)}).populate('user project').exec();
+                if (!candidate){
+                    cv_score = 0;
+                }
+            //str = str.replace(/\s+/g, '');
+            let qualification = candidate?.education?.qualification.replace(/\s+/g, '')
+            qualification = qualification.toLowerCase();
+            console.log(qualification)
+            if (qualification ===  "phd/doctrate"){
+                cv_score = 100;
+            }
+            else if (qualification === "masters"){
+                cv_score = 75;
+            }
+            else if (qualification === "becholars" || qualification === "pharm-d"){
+                cv_score = 60;
+            }
+            else if (qualification === "mbbs/bds"){
+                cv_score = 80;
+            }
+            else if (qualification === "m-phil"){
+                cv_score = 85;
+            }
+            else if (qualification ===  "non-matriculation"){
+                cv_score = 30;
+            }
+            else if (qualification ===  "matriculation/o-level"){
+                cv_score = 40;
+            }
+            else if( qualification ===  "certification" || 
+                qualification ===  "diploma" ||
+                qualification ===  "shortcourse"
+            ){
+                cv_score = 50;
+            }
+            
+            //cv_percentage
+            const cv_percentage = cv_score;
+            console.log(cv_percentage)
+            
+            //overall_score
+            let overall_score1 = +(emotions_percentage) + (+quiz_percentage) + (+cv_percentage);
+            let overall_score2 = overall_score1 / 300;
+            let overall_score3 = overall_score2 * 100;
+            const overall_score = overall_score3;
+
+
+            console.log("emotions_percentage :", emotions_percentage);
+            console.log("quiz_percentage: ", quiz_percentage);
+            console.log("cv_percentage :", cv_percentage)
+            console.log("overall_score: ", overall_score);
+
+            //Update Meeting
+            meeting = await Meeting.findOneAndUpdate({_id: mongoose.Types.ObjectId(req.body.meetingId)},{
+                ended: 1
+            }).populate('madeBy');
+                if(!meeting) res.status(400).json({msg: "Meeting not Found"});
+            console.log(meeting.ended)
+            res.json({msg: "success"});
+
+
+
+            // const Interviewer_userId = req.body.userId;
+            // let {expiry_date, expiry_time, start_date, start_time, password} = req.body;
+            // // console.log("Expiry date from req.body: ", expiry_date)
+
+            // const newDateStart = new Date(start_date)
+            // start_date = new Date(newDateStart.getTime() + (5 * 60 * 60 * 1000)) //converting into pakistani timezone
+            // // console.log("Start date after: ", start_date)
+
+            // const newDateExpiry = new Date(expiry_date)
+            // expiry_date = new Date(newDateExpiry.getTime() + (5 * 60 * 60 * 1000)) //converting into pakistani timezone
+            // // console.log("Expiry date after: ", expiry_date)
+
+            // // const newStartTime = new Date(start_time)
+            // // start_time = new Date(newStartTime.getTime() + (5 * 60 * 60 * 1000)) //converting into pakistani timezone
+            // // // console.log("Start date after: ", start_date)
+
+            // // const newExpiryTime = new Date(expiry_time)
+            // // expiry_time = new Date(newExpiryTime.getTime() + (5 * 60 * 60 * 1000)) //converting into pakistani timezone
+           
+            // const passwordHash = await bcrypt.hash(password, 12);
+            
+            // // const isMatch = await bcrypt.compare(password, user.password);  //for comparing password
+            // console.log("email is ", expiry_date)
+            // const doc = await test.findOne({ pin: testid }).exec();
+            // if (!doc) return res.status(400).json({msg : "Test doesn't exist!"})
+
+            // if (Date.parse(doc.expiry) < Date.now()) return res.status(400).json({ msg: "Test has expired!" });
+            
+            // const check = await result.findOne({ pin: testid, email }).exec();
+            // if (check) return res.status(400).json({ msg: "Test already taken!" });
+
+            // const checkSameQuiz = await Meeting.findOne({ pin: testid, candidate_user_email : email }).exec();
+            // if(checkSameQuiz)  return res.status(400).send({ msg: "You already have Registered the same quiz for respective Candidate" });
+            
+            // const candidate_user = await Users.findOne({email: email}).exec();
+            // if(!candidate_user) return res.status(400).send({ msg: "Candidate doesn't exist with this email" });
+            
+
+            // const interviewer = await Interviewer.findOne({user: mongoose.Types.ObjectId(req.body.userId)}).populate('user posts companies').exec();
+            // if(!interviewer) return res.status(400).send({ msg: "Interviewer Not found" });
+            // const interviewerId = mongoose.Types.ObjectId(interviewer._id)
+
+            // //notification to candidate
+            // candidate_user.candidate_notifications.push(`Meeting has been scheduled for you by ${interviewer?.user?.name}`)
+            // candidate_user.candidate_notifications.push(`A Test has been assigned to you. Enter pin : ${testid} to attempt it`)
+            // candidate_user.candidate_notifications.push(`Enter ${password} as password to join meeting when it starts`);
+            // candidate_user.candidate_notifications.push(`An email has been sent by ${interviewer?.user?.name}`)
+           
+
+
+            // const newMeeting = new Meeting({
+            //     madeBy: interviewerId, pin: testid, candidate_user_email: email, 
+            //     start_date, start_time,
+            //     expiry_date, expiry_time,
+            //     password: passwordHash
+            // })
+
+            // // send email to candidate
+            // const meetingId = mongoose.Types.ObjectId(newMeeting._id);
+            // const toEmail = candidate_user?.email;
+            // const toName = candidate_user?.name;
+            // const sentByName = interviewer?.user?.name;
+            // const button_url = `http://localhost:3000/meetings/join-room/${meetingId}`           
+            // const message = "Please join the meeting with following Id"
+            // await sendEmailToCandidate(toEmail, toName, sentByName, button_url, message);
+
+            // await newMeeting.save()
+            // await candidate_user.save();
+
+            // res.json({msg : "Meeting has been added"})
+            
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+        
     },
 }
 function validatePassword(pass) {

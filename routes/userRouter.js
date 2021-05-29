@@ -93,6 +93,9 @@ router.post('/get-meetings-via-userId-for-candidate', userCtrl.getmeetings_via_u
 router.post('/compare-password-by-meetingId', userCtrl.compare_meeting_password_via_meetingId)
 router.post('/update-started-meeting-by-meetingId', userCtrl.updatestarted_via_meetingId)
 
+//add report    
+router.post('/add-report', userCtrl.addreport_via_meeting_id)
+
 // For checking
 router.get('/preview', function(req, res){
     res.render('../views/email.hjs', {firstName: "Will"})

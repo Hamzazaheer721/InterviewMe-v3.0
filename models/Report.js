@@ -1,21 +1,44 @@
 const mongoose = require('mongoose')
 
-const userSchema = new mongoose.Schema({
-    Interviewer: {type : mongoose.Schema.Types.ObjectId, ref: "Users"},
-    Candidate: {type : mongoose.Schema.Types.ObjectId, ref: "Users"},
-    startTime : {type : String, default : "M: 1, D: 1, Year: 2020"},
-    endTime : {type : String, default : "M: 1, D: 1, Year: 2020"},
-    QuizType: {type: Number, default: 1 },
-    TotalScore: {type:Number, default: 10},
-    userScore: {type: Number},
-    correctAnswers: {type: Number},
-    EmotionScore: {type: Number},
-    InterviewResult: {type: "String", default: ""},
-    Remarks: {type: 'String', default: ""} 
+const reportSchema = new mongoose.Schema({
+    interviewer_name : {
+        type: String,
+        default: ""
+    },
+    candidate_name : {
+        type: String,
+        default: ""
+    },
+    meeting: {type : mongoose.Schema.Types.ObjectId, ref: "Meeting"},
+
+    emotions_percentage: {
+        type: Number,
+        default: 0
+    },
+    quiz_percentage: {
+        type: Number,
+        default: 0
+    },
+    cv_percentage:{
+        type: Number,
+        default: 0
+    },
+    overall_score:{
+        type: Number,
+        default: 0
+    },
+    chartData: [[]],
+    comments:{
+        type: String,
+        default: ""
+    },
+    hired :{
+        type: Boolean,
+        default: false
+    }
+
 }, {
     timestamps: true 
-    //using this will make createdAt and UpdatedAt
-    //we will fetch createdAt to display the time of meeting start
 })
 
-module.exports = mongoose.model("Report", userSchema);
+module.exports = mongoose.model("Report", reportSchema);

@@ -80,6 +80,7 @@ import Interviewer_Schedule_Meeting from './components/Meetings/Interviewer_Sche
 import Interviewer_Schedule_Meeting_Table from './components/Meetings/Interviewer_Schedule_Meeting_Table';
 import Update_Interviewer_Schedule_Meeting from './components/Meetings/Update_Interviewer_Schedule_Meeting';
 import Candidate_Schedule_Meeting_Table from './components/Meetings/Candidate_Schedule_Meeting_Table';
+import ChartComponent from './components/Chart';
 // const loading = (
 //   <Loader type="TailSpin" color="#00BFFF" height={40} width={40}/>
 // )
@@ -330,6 +331,9 @@ function App() {
                 </Route>
                 
                { /* <Route exact path="/landing" render={(props) => <Dashboard_Custom user={auth?.user} component = {HomeLanding} {...props} />} />*/ }
+                <Route path = "/chart"> 
+                  <ChartComponent /> 
+                </Route>
 
               </Switch>
            </React.Suspense>     
