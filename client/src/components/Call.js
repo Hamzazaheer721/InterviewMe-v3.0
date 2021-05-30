@@ -529,20 +529,7 @@ function Call() {
                 <span> {mute ? "Mute" : "UnMute" } </span>
               </div>
 
-              <div  className="main__controls__button main__video__button">
-                {/* {/* <i className= {playStop_btn_class} onClick = {playStop}></i> */}
-                {enableVideo ? (
-                  <>
-                    <VideocamIcon  onClick = {playStop} />
-                  </>
-                ):(
-                  <> 
-                  <VideocamOffIcon className = "stop" onClick = {playStop}/>
-                  </>
-                )}
-                <span> {enableVideo ? "Stop Video" : "Play Video" } </span> */}
-                
-              </div>
+             
             </div>
 
           <div className="main__controls__block">
