@@ -81,6 +81,7 @@ import Interviewer_Schedule_Meeting_Table from './components/Meetings/Interviewe
 import Update_Interviewer_Schedule_Meeting from './components/Meetings/Update_Interviewer_Schedule_Meeting';
 import Candidate_Schedule_Meeting_Table from './components/Meetings/Candidate_Schedule_Meeting_Table';
 import ChartComponent from './components/Chart';
+import Report_Page from './components/Make_Interview_Post.js/Report_Page';
 // const loading = (
 //   <Loader type="TailSpin" color="#00BFFF" height={40} width={40}/>
 // )
@@ -324,8 +325,8 @@ function App() {
                 <PrivateRoute path="/meetings/see-schedule-meeting" component={isAdmin ? Interviewer_Schedule_Meeting_Table : NotFound}  user = {auth?.user} isAdmin = {auth?.isAdmin} isLogged = {auth?.isLogged} />
                 <PrivateRoute path="/meetings/update-schedule-meeting/:id" component={isAdmin ? Update_Interviewer_Schedule_Meeting : NotFound}  user = {auth?.user} isAdmin = {auth?.isAdmin} isLogged = {auth?.isLogged} />
                 
-                <PrivateRoute path="/meetings/candidate-see-meetings-schedule" component={isLogged ? Candidate_Schedule_Meeting_Table : NotFound}  user = {auth?.user} isAdmin = {auth?.isAdmin} isLogged = {auth?.isLogged} />
-
+                <PrivateRoute path="/meetings/see-meetings-schedule-for-candidate" component={isLogged ? Candidate_Schedule_Meeting_Table : NotFound}  user = {auth?.user} isAdmin = {auth?.isAdmin} isLogged = {auth?.isLogged} />
+                <PrivateRoute path="/meetings/see-candidate-report/:id" component={isLogged ? Report_Page : NotFound}  user = {auth?.user} isAdmin = {auth?.isAdmin} isLogged = {auth?.isLogged} />
                 <Route path = "/meetings/join-room/:id">   
                   < Call />
                 </Route>

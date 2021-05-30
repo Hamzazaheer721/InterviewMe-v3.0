@@ -103,7 +103,7 @@ const dashRoutes_candidate = [
     icon: CallIcon,
     views: [
       {
-        path: "/meetings/candidate-see-meetings-schedule",
+        path: "/meetings/see-meetings-schedule-for-candidate",
         name: "See Schedule",
         mini: "SS",
         component: Candidate_Schedule_Meeting_Table

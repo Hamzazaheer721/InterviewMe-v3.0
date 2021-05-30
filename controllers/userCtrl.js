@@ -1803,48 +1803,69 @@ const userCtrl = {
             let fearful = 0;
             let disgusted = 0;
             let surprised = 0;
-
             let score = 0;
+            let emotions_score;
+            let emotions_percentage; 
             let emotionsArrayLength = emotionArrayToSend?.length;
-            for ( i = 0 ; i< emotionArrayToSend?.length; i++){
-                const ea = emotionArrayToSend[i];
-                console.log("Emotions array at index")
-                if (ea.expression === "neutral"){
-                    neutral = neutral + 1;
-                    score = score + 1;
-                }
-                if (ea.expression === "happy"){
-                    happy = happy + 1;
-                    score = score + 1;
-                }
-                if (ea.expression === "surprised"){
-                    surprised = surprised + 1;
-                    score = score + 0.5;
-                }
-                if (ea.expression === "fearful"){
-                    fearful = fearful + 1;
-                }
-                if (ea.expression === "disgusted"){
-                    disgusted = disgusted + 1;
-                }
-                if (ea.expression === "angry"){
-                    angry = angry + 1;
-                }
-            }
-            // emotions Score
-            let emotions_score = (score/emotionsArrayLength) * 15;
-            let emotions_percentage = (score/emotionsArrayLength) * 100;
+            let chartData;
 
-            //chartData
-            let chartData = [
-                ['Task', 'Hours per Day'],
-                ['Happy', happy],
-                ['Neutral', neutral],
-                ['Angry', angry],
-                ['Surprised', surprised],
-                ['Fearful', fearful],
-                ['Disgusted', disgusted]
-            ]
+            if(emotionArrayToSend.length >0){  
+                for ( i = 0 ; i< emotionArrayToSend?.length; i++){
+                    const ea = emotionArrayToSend[i];
+                    console.log("Emotions array at index")
+                    if (ea.expression === "neutral"){
+                        neutral = neutral + 1;
+                        score = score + 1;
+                    }
+                    if (ea.expression === "happy"){
+                        happy = happy + 1;
+                        score = score + 1;
+                    }
+                    if (ea.expression === "surprised"){
+                        surprised = surprised + 1;
+                        score = score + 0.5;
+                    }
+                    if (ea.expression === "fearful"){
+                        fearful = fearful + 1;
+                    }
+                    if (ea.expression === "disgusted"){
+                        disgusted = disgusted + 1;
+                    }
+                    if (ea.expression === "angry"){
+                        angry = angry + 1;
+                    }
+                }
+                // emotions Score
+                emotions_score = (score/emotionsArrayLength) * 15;
+                emotions_percentage = (score/emotionsArrayLength) * 100;
+
+                //chartData
+                chartData = [
+                    ['Task', 'Hours per Day'],
+                    ['Happy', happy],
+                    ['Neutral', neutral],
+                    ['Angry', angry],
+                    ['Surprised', surprised],
+                    ['Fearful', fearful],
+                    ['Disgusted', disgusted]
+                ]
+            }
+            else{
+                emotions_score = 0;
+                emotions_percentage = 0;
+
+                chartData = [
+                    ['Task', 'Hours per Day'],
+                    ['No Emotions', 1],
+                    ['Happy', 0],
+                    ['Neutral', 0],
+                    ['Angry', 0],
+                    ['Surprised', 0],
+                    ['Fearful', 0],
+                    ['Disgusted', 0]
+                ]
+            }
+            
 
             //printing chartData, score and percentage of emotions
             console.log(chartData);
@@ -1858,14 +1879,26 @@ const userCtrl = {
                 if(!meeting) res.status(400).json({msg: "Meeting not Found"});
             let pinForResult = meeting?.pin;
             let emailForResult =  meeting?.candidate_user_email;
-            
+
+            let interviewer_id = mongoose.Types.ObjectId(meeting?.madeBy?._id);
+            let meeting_id = mongoose.Types.ObjectId(meeting?._id);
+            console.log("meeting_id :", meeting_id);
+            console.log("interviewer_id :", interviewer_id);
+            let interviewer_name;
+            const interviewer = await Interviewer.findOne({_id: mongoose.Types.ObjectId(interviewer_id)}).populate('user posts companies').exec();
+            if (!interviewer){
+                interviewer_name = "N/A";
+            }
+
+            interviewer_name = interviewer?.user?.name;
+            const interviewer_user = interviewer?.user;
+
             const check = await result.findOne({ pin: pinForResult, email: emailForResult }).exec();
                 if (!check) {
                     quiz_percentage = 0; 
                 }
                 else{
                     quiz_percentage = parseInt(check?.score);
- 
                 }
             
             //quiz_percentage
@@ -1878,11 +1911,14 @@ const userCtrl = {
                 if(!user){
                     cv_score = 0;
                 }
-            const candidate = await Candidate.findOne({user: mongoose.Types.ObjectId(user?._id)}).populate('user project').exec();
+
+            const candidate = await Candidate.findOne({user: mongoose.Types.ObjectId(user?._id)}).populate('user projects').exec();
                 if (!candidate){
                     cv_score = 0;
-                }
+                }            
             //str = str.replace(/\s+/g, '');
+            let candidate_user = candidate?.user;
+            let candidate_name = candidate?.user?.name;
             let qualification = candidate?.education?.qualification.replace(/\s+/g, '')
             qualification = qualification.toLowerCase();
             console.log(qualification)
@@ -1929,93 +1965,103 @@ const userCtrl = {
             console.log("quiz_percentage: ", quiz_percentage);
             console.log("cv_percentage :", cv_percentage)
             console.log("overall_score: ", overall_score);
+            console.log("candidate_name :", candidate_name )
+            console.log("interviewer_name :", interviewer_name )
+            console.log("interviewer_user :", interviewer_user )
+            console.log("candidate_user :", candidate_user )
+            console.log("interviewer :", interviewer )
+            console.log("candidate :", candidate )
+            console.log("meeting  :", meeting_id )
 
+            let chartData_2 = [
+                ['', 'Quiz', 'Emotions', 'CV'],
+                [candidate_name, quiz_percentage, emotions_percentage, cv_percentage]
+            ]
             //Update Meeting
             meeting = await Meeting.findOneAndUpdate({_id: mongoose.Types.ObjectId(req.body.meetingId)},{
                 ended: 1
             }).populate('madeBy');
                 if(!meeting) res.status(400).json({msg: "Meeting not Found"});
             console.log(meeting.ended)
+
+            const report = new Report ({
+                interviewer : mongoose.Types.ObjectId(interviewer?._id),
+                candidate: mongoose.Types.ObjectId(candidate?._id),
+                interviewer_name, candidate_name,
+                candidate_user: mongoose.Types.ObjectId(candidate_user?._id), 
+                interviewer_user: mongoose.Types.ObjectId(interviewer_user?._id),
+                meeting: meeting_id,
+                emotions_percentage, quiz_percentage, cv_percentage, overall_score,
+                chartData, chartData_2
+            }) 
+
+            await report.save(); 
             res.json({msg: "success"});
 
-
-
-            // const Interviewer_userId = req.body.userId;
-            // let {expiry_date, expiry_time, start_date, start_time, password} = req.body;
-            // // console.log("Expiry date from req.body: ", expiry_date)
-
-            // const newDateStart = new Date(start_date)
-            // start_date = new Date(newDateStart.getTime() + (5 * 60 * 60 * 1000)) //converting into pakistani timezone
-            // // console.log("Start date after: ", start_date)
-
-            // const newDateExpiry = new Date(expiry_date)
-            // expiry_date = new Date(newDateExpiry.getTime() + (5 * 60 * 60 * 1000)) //converting into pakistani timezone
-            // // console.log("Expiry date after: ", expiry_date)
-
-            // // const newStartTime = new Date(start_time)
-            // // start_time = new Date(newStartTime.getTime() + (5 * 60 * 60 * 1000)) //converting into pakistani timezone
-            // // // console.log("Start date after: ", start_date)
-
-            // // const newExpiryTime = new Date(expiry_time)
-            // // expiry_time = new Date(newExpiryTime.getTime() + (5 * 60 * 60 * 1000)) //converting into pakistani timezone
-           
-            // const passwordHash = await bcrypt.hash(password, 12);
-            
-            // // const isMatch = await bcrypt.compare(password, user.password);  //for comparing password
-            // console.log("email is ", expiry_date)
-            // const doc = await test.findOne({ pin: testid }).exec();
-            // if (!doc) return res.status(400).json({msg : "Test doesn't exist!"})
-
-            // if (Date.parse(doc.expiry) < Date.now()) return res.status(400).json({ msg: "Test has expired!" });
-            
-            // const check = await result.findOne({ pin: testid, email }).exec();
-            // if (check) return res.status(400).json({ msg: "Test already taken!" });
-
-            // const checkSameQuiz = await Meeting.findOne({ pin: testid, candidate_user_email : email }).exec();
-            // if(checkSameQuiz)  return res.status(400).send({ msg: "You already have Registered the same quiz for respective Candidate" });
-            
-            // const candidate_user = await Users.findOne({email: email}).exec();
-            // if(!candidate_user) return res.status(400).send({ msg: "Candidate doesn't exist with this email" });
-            
-
-            // const interviewer = await Interviewer.findOne({user: mongoose.Types.ObjectId(req.body.userId)}).populate('user posts companies').exec();
-            // if(!interviewer) return res.status(400).send({ msg: "Interviewer Not found" });
-            // const interviewerId = mongoose.Types.ObjectId(interviewer._id)
-
-            // //notification to candidate
-            // candidate_user.candidate_notifications.push(`Meeting has been scheduled for you by ${interviewer?.user?.name}`)
-            // candidate_user.candidate_notifications.push(`A Test has been assigned to you. Enter pin : ${testid} to attempt it`)
-            // candidate_user.candidate_notifications.push(`Enter ${password} as password to join meeting when it starts`);
-            // candidate_user.candidate_notifications.push(`An email has been sent by ${interviewer?.user?.name}`)
-           
-
-
-            // const newMeeting = new Meeting({
-            //     madeBy: interviewerId, pin: testid, candidate_user_email: email, 
-            //     start_date, start_time,
-            //     expiry_date, expiry_time,
-            //     password: passwordHash
-            // })
-
-            // // send email to candidate
-            // const meetingId = mongoose.Types.ObjectId(newMeeting._id);
-            // const toEmail = candidate_user?.email;
-            // const toName = candidate_user?.name;
-            // const sentByName = interviewer?.user?.name;
-            // const button_url = `http://localhost:3000/meetings/join-room/${meetingId}`           
-            // const message = "Please join the meeting with following Id"
-            // await sendEmailToCandidate(toEmail, toName, sentByName, button_url, message);
-
-            // await newMeeting.save()
-            // await candidate_user.save();
-
-            // res.json({msg : "Meeting has been added"})
             
         } catch (err) {
             return res.status(500).json({msg: err.message})
         }
         
     },
+    getreport_via_meetingId: async (req, res) => {
+        try {
+            console.log("get-report-via-meetingId")
+            const {meetingId} = req.body;
+            console.log(req.body)
+            const doc = await Report.findOne({ meeting: mongoose.Types.ObjectId(req.body.meetingId) }).populate('meeting interviewer_user candidate_user interviewer candidate').sort("-created").exec();
+                if (!doc) {
+                    console.log("document not found")
+                    res.status(400).json({msg: "Result not found"})
+                }
+                else{
+                    return res.send(doc);
+                }  
+            
+
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    updatereport_via_meeting_id: async (req, res ) => {
+        try {
+            console.log("update-company-by-project-id")
+            const {
+
+                meetingId,
+                interviewer, 
+                interviewer_user, 
+                candidate,
+                candidate_user,
+                comments,
+                hired
+            } = req.body;
+
+            console.log(req.body)
+            let report = await Report.findOneAndUpdate({meeting: mongoose.Types.ObjectId(req.body.meetingId)},    
+            {
+                comments,
+                hired         
+            })
+            if(!report){
+                return res.status(400).json({msg:"Report not found"});
+            }
+            const meeting = await Meeting.findOne({_id: mongoose.Types.ObjectId(req.body.meetingId)})
+                if (!Meeting) return res.status(400).json({msg:"Meeting not found"});
+
+            const user = await Users.findOne({_id : mongoose.Types.ObjectId(candidate_user?._id)})
+                if (!user) return res.status(400).json({msg:"User not found"});
+            let candi = `${interviewer_user?.name} has announced result on meeting with ping: ${meeting?.pin}`;
+            user.candidate_notifications.push(candi);
+            user.save();
+
+            res.json({msg : "Information has been updated"})
+            
+        } catch (err) {
+            console.log("error", err.message)
+            return res.status(500).json({msg: err.message})
+        }
+    }, 
 }
 function validatePassword(pass) {
     const re = /^(?=(.*\d){1})(?=(.*[A-Z]){1})(?=(.*[a-z]){1})(?=(.*[!@#$%]){1})[0-9a-zA-Z!@#$%]{6,12}$/;

@@ -122,6 +122,7 @@ const headCells = [
   { id: 'expiryTime', numeric: true, disablePadding: false, label: 'Expiry Time' },
   { id: 'expiryDate', numeric: true, disablePadding: false, label: 'Expiry Date' },
   { id: 'actions', numeric: true, disablePadding: false, label: "Actions" },
+  
 ];
 function EnhancedTableHead(props) {
   const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
@@ -409,15 +410,24 @@ export default function Interviewer_Schedule_Meeting_Table({user, meetingsReceiv
         
         
         //stating HH to hh will give you 12h format
-        const st = moment(newsd2).set({h: startTimeHours, m: startTimeMins, s: startTimeSecs}).format('DD-MM-YYYY HH:mm:ss')
-        const ct = moment(fullDateNow).format('DD-MM-YYYY HH:mm:ss');
-        const et = moment(newed2).set({h: expiryTimeHours, m: expiryTimeMins, s: expiryTimeSecs}).format('DD-MM-YYYY HH:mm:ss')
+        let st0 = moment(newsd2).set({h: startTimeHours, m: startTimeMins, s: startTimeSecs}).format('DD-MM-YYYY HH:mm:ss')
+        let ct0 = moment(fullDateNow).format('DD-MM-YYYY HH:mm:ss');
+        let et0 = moment(newed2).set({h: expiryTimeHours, m: expiryTimeMins, s: expiryTimeSecs}).format('DD-MM-YYYY HH:mm:ss')
      
 
-        console.log("Starting Time Date", st)
-        console.log("Current Time Date", ct)
-        console.log("Expiry Time Date", et)
+        console.log("Starting Time Date", st0)
+        console.log("Current Time Date", ct0)
+        console.log("Expiry Time Date", et0)
+        let st = new Date(newsd2).getTime();
+        let ct = new Date (fullDateNow).getTime();
+        let et = new Date(newed2).getTime();
 
+        
+        // console.log("Starting Time Date", st)
+        // console.log("Current Time Date", ct)
+        // console.log("Expiry Time Date", et)
+
+        console.log(new Date(newed2))
         if ((ct <= et) && (ct >= st)){
           setError("")
           setSuccess("Starting Meeting..")
@@ -580,20 +590,29 @@ export default function Interviewer_Schedule_Meeting_Table({user, meetingsReceiv
                         <TableCell align="right">{moment(meeting?.expiry_date, 'YYYY-MM-DD').format('MM-DD-YYYY')}</TableCell>
 
                         <TableCell align="right">
-                          <Link
-                            to = {`/meetings/update-schedule-meeting/${meeting?._id}`}
-                          >
-                            <i className="fas fa-edit  quiz__font__icons quiz__font__first__icon" title="Edit"  ></i>
-                          </Link>                    
-                         
-                          <i className="fas fa-trash-alt quiz__font__icons" title="Remove" onClick={() => handleDelete(meeting?._id)} ></i>
+                          <div >
+                            <Link
+                              to = {`/meetings/update-schedule-meeting/${meeting?._id}`}
+                            >
+                              <i className="fas fa-edit w3-large  quiz__font__icons quiz__font__first__icon" title="Edit"  ></i>
+                            </Link>                    
                           
+                            <i className="fas fa-trash-alt w3-large quiz__font__icons" title="Remove" onClick={() => handleDelete(meeting?._id)} ></i>
+                            
+                            
+  {/*                           <i class="fa fa-phone quiz__font__icons" aria-hidden="true" onClick={() => handleEdit(meeting)}></i>
+  */}                         
+                            
+                            {meeting?.ended === 1 && (
+                              <Link to = {`/meetings/see-candidate-report/${meeting?._id}`}>
+                                <span class="material-icons md-25 three__icons" disabled = {true}>poll</span>
+                              </Link>
+                            )}
+                            {meeting?.ended === 0  && <i class="fa fa-phone w3-large quiz__font__icons" aria-hidden="true" onClick={() => handleClickOpen(meeting)}></i>}
+                            
+                          </div>
                           
-{/*                           <i class="fa fa-phone quiz__font__icons" aria-hidden="true" onClick={() => handleEdit(meeting)}></i>
- */}                         
-                          <i class="fa fa-phone quiz__font__icons" aria-hidden="true" onClick={() => handleClickOpen(meeting)}></i>
-
-                          
+                        
    
                         </TableCell>
                         <TableCell align="right"></TableCell>

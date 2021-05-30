@@ -1,6 +1,11 @@
 const mongoose = require('mongoose')
 
 const reportSchema = new mongoose.Schema({
+    meeting: {type : mongoose.Schema.Types.ObjectId, ref: "Meeting"},
+    interviewer: {type : mongoose.Schema.Types.ObjectId, ref: "Interviewer"},
+    candidate: {type : mongoose.Schema.Types.ObjectId, ref: "Candidate"},
+    interviewer_user: {type : mongoose.Schema.Types.ObjectId, ref: "Users"},
+    candidate_user: {type : mongoose.Schema.Types.ObjectId, ref: "Users"},
     interviewer_name : {
         type: String,
         default: ""
@@ -9,8 +14,6 @@ const reportSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
-    meeting: {type : mongoose.Schema.Types.ObjectId, ref: "Meeting"},
-
     emotions_percentage: {
         type: Number,
         default: 0
@@ -28,14 +31,16 @@ const reportSchema = new mongoose.Schema({
         default: 0
     },
     chartData: [[]],
+    chartData_2: [[]],
     comments:{
         type: String,
         default: ""
     },
     hired :{
-        type: Boolean,
-        default: false
-    }
+        type: String,
+        default: ""
+    },
+
 
 }, {
     timestamps: true 

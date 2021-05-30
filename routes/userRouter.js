@@ -95,6 +95,8 @@ router.post('/update-started-meeting-by-meetingId', userCtrl.updatestarted_via_m
 
 //add report    
 router.post('/add-report', userCtrl.addreport_via_meeting_id)
+router.post('/get-report-by-meetingId', userCtrl.getreport_via_meetingId)
+router.post('/update-report-by-meetingId', userCtrl.updatereport_via_meeting_id)
 
 // For checking
 router.get('/preview', function(req, res){

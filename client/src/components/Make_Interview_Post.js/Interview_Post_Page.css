@@ -179,8 +179,47 @@
   padding-bottom: 30px;
   height: 600px;
   flex: 1;
-
 }
+
+.graph__list__section{
+  padding-left: 10px;
+  margin-top: 45px;
+  margin-bottom: 10px;
+  display:flex;
+  flex-direction: column;
+  width: 95%;
+  justify-content: center;
+  border: 1px solid black;
+  border-radius: 15px 50px;
+  padding-bottom: 30px;
+  height: 600px;
+  flex: 1;
+  overflow: auto;
+}
+
+.graph__main{
+  padding-left:140px
+}
+.bar__graph__main{
+  padding-top: 20px;
+  padding-left:60px
+}
+.bar__graph__list__section{
+  padding-left: 10px;
+  margin-top: 45px;
+  margin-bottom: 10px;
+  display:flex;
+  flex-direction: column;
+  width: 95%;
+  justify-content: center;
+  border: 1px solid black;
+  border-radius: 15px 50px;
+  padding-bottom: 30px;
+  height: 600px;
+  flex: 1;
+  overflow: auto;
+}
+
 .company__title__section{
   display:flex;
   justify-content:space-around;

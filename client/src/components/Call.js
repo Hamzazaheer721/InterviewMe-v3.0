@@ -31,7 +31,7 @@ import PhoneDisabledIcon from '@material-ui/icons/PhoneDisabled';
 import PhoneIcon from '@material-ui/icons/Phone';
 import * as faceapi from 'face-api.js'
 import * as hark from 'hark';
-
+import CallIcon from '@material-ui/icons/Call';
 const Demo = props => (
   <ScriptTag type="text/javascript" defer src="/client/src/components/face-api.min.js" />
 )
@@ -89,7 +89,7 @@ function Call() {
     const endPoint = 'http://localhost:5000';
     const [loading, setLoading] = useState(true);
     const [secondLoading, setSecondLoading] = useState(true);
-
+    const showButton = useRef();
     const [candidateEmotion, setCandidateEmotion] = useState([]);
     var scoredEmotions = [];
 
@@ -477,23 +477,17 @@ function Call() {
     };
 
     const reloadVideo= () => {
-      
-      if (isLogged){
+        history.push('/')
+        window.location.reload(false);
+    } 
+
+    const reloadVideoCandidate = () => {
         setCandidateEmotion(scoredEmotions)
         const emotionArrayToSend = scoredEmotions;
         const meetingId = id;
         sendEmotionsArray(emotionArrayToSend, meetingId)
       }
 
-      if(isAdmin){
-        // history.push('/admin')
-        history.push('/')
-        window.location.reload(false);
-      }
-
-     
-      
-    } 
 
 
     return (
@@ -558,28 +552,44 @@ function Call() {
                 }
                 if(isAdmin) {
                   return(
-                    <button onClick={() => callPeer(key)}>{isAdmin ? "Call Candidate" : "Call Interviewer"}</button>
+                    <>
+                      <div class="main__controls__button" onClick={() => callPeer(key)}>
+
+                        <CallIcon />
+                        <span > {isAdmin ? "Call Candidate" : "Call Interviewer"} </span>             
+                      </div>
+                    </>
                   )
                 }
-                if(!isAdmin) {
-                  return (
-                    null
-                  );
+                if (!isAdmin){
+                  return null
                 }
+
+          
+                
               })}
               {/* {incomingCall} */}
           </div>
             
               
               <div class="main__controls__block">
-
-                <div class="main__controls__button" onClick = {reloadVideo}>
-                    {/* <Link to= "/main-menu"> */}
-                      <i  class="fas fa-sign-out-alt"></i>
-                      {/* <span class= "leave__meeting" onClick = {()=> window.location.reload(false); }> Leave Meeting</span> */}
-                      <span class= "leave__meeting"  > Leave Meeting</span>
-                    {/* </Link> */}        
-                </div>
+                {
+                  isAdmin && (
+                    <div class="main__controls__button" onClick = {reloadVideo}>
+                        <i  class="fas fa-sign-out-alt"></i>
+                        <span class= "leave__meeting"  > Leave Meeting</span>
+                    </div>
+                  )
+                }
+                {
+                  !user?.role  && (
+                    <div class="main__controls__button" onClick = {reloadVideoCandidate}>
+                        <i  class="fas fa-sign-out-alt"></i>
+                        <span class= "leave__meeting"  > Leave Meeting</span>
+                    </div>
+                  )
+                }
+                
           </div>
         </div>
         </div>

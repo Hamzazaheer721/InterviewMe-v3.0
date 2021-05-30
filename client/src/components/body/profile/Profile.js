@@ -6,7 +6,9 @@ import {isLength, isMatch} from '../../utils/validation/Validation'
 import {showSuccessMsg, showErrMsg} from '../../utils/notification/Notification'
 import {fetchAllUsers,  dispatchGetAllUsers} from '../../../redux/actions/usersAction'
 import {dispatchLogin, fetchUser, dispatchGetUser, dispatchMakeVisible, dispatchMakeInvisible, dispatchToggleVisible} from '../../../redux/actions/authAction'
-
+import Loading from '../../Loading'
+import Feed from '../../Posts/Feed'
+import PostsBody from '../../Posts/PostsBody'
 const initialState = {
     name: '',
     password: '',
@@ -150,15 +152,19 @@ function Profile() {
     return (
         <>
         {
-            loadingUpdate ? (<h3>redux Dispatching.....</h3>)
+            loadingUpdate ? (
+                <>
+                    <Loading />
+                </>
+            )
             :(
                 <>
                 <div>
             
             {err && showErrMsg(err)}
             {success && showSuccessMsg(success)}
-            {loading && <h3>Loading.....</h3>}
-        </div>
+            {loading && (<Loading />)}
+            </div>
         <div className="profile_page">
             <div className="col-left">
                 <h2>{isAdmin ? "Interviewer Profile": "Candidate Profile"}</h2>
@@ -207,46 +213,8 @@ function Profile() {
             </div>
 
             <div className="col-right">
-                {/* <h2>{isAdmin ? "Users" : "My Orders"}</h2> */}
-                <h2>{isAdmin ? "Users" : "Your Friends"}</h2>
-                <div style={{overflowX: "auto"}}>
-                    <table className="customers">
-                        <thead>
-                            <tr>
-                                {/* <th>ID</th> */}
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Interviewer</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                users.map(user => (
-                                    <tr key={user._id}>
-                                        {/* <td>{user._id}</td> */}
-                                        <td>{user.name}</td>
-                                        <td>{user.email}</td>
-                                        <td>
-                                            {
-                                                user.role === 1
-                                                ? <i className="fas fa-check" title="Interviewer"></i>
-                                                : <i className="fas fa-times" title="Candidate"></i>
-                                            }
-                                        </td>
-                                        <td>
-                                            <Link to={`/edit_user/${user._id}`}>
-                                                <i className="fas fa-edit" title="Edit"></i>
-                                            </Link>
-                                            <i className="fas fa-trash-alt" title="Remove"
-                                            onClick={() => handleDelete(user._id)} ></i>
-                                        </td>
-                                    </tr>
-                                ))
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                <h1> Upload Status</h1>
+                <PostsBody user = {user} />
             </div>
         </div></>
             )

@@ -22,25 +22,8 @@ import { showErrorMessage, showSuccessMessage } from '../utils/notification/Noti
 import { isEmpty, validateAge, validateInstitute, validatePhoneNumber, validateSalary, validateTitle, validateWorkHours } from '../utils/validation/Validation';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
 
-import Loader from "react-loader-spinner";
 
-import Chip from '@material-ui/core/Chip';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import DateFnsUtils from '@date-io/date-fns';
-
-import MomentUtils from '@date-io/moment';
-import WorkOutlinedIcon from '@material-ui/icons/WorkOutlined';
-
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
 
 function Copyright() {
   return (

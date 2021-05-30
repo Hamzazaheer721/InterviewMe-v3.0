@@ -13,7 +13,7 @@ function ChartComponent() {
       ];
     return (
         <div>
-        heyyyy
+  
         <Chart
             width={'500px'}
             height={'300px'}
@@ -27,6 +27,26 @@ function ChartComponent() {
             }}
             rootProps={{ 'data-testid': '1' }}
         />
+
+        <Chart
+        width={'500px'}
+        height={'300px'}
+        chartType="Bar"
+        loader={<div>Loading Chart</div>}
+        data={[
+          ['', 'Quiz', 'Emotions', 'CV'],
+          ['Hamza Zaheer', 55, 42, 23]
+        ]}
+        options={{
+          // Material design options
+          chart: {
+            title: 'Company Performance',
+            subtitle: 'Sales, Expenses, and Profit: 2014-2017',
+          },
+        }}
+        // For tests
+        rootProps={{ 'data-testid': '2' }}
+      />
         </div>
     )
 }

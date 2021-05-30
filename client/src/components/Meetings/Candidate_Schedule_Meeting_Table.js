@@ -407,15 +407,20 @@ export default function Candidate_Schedule_Meeting_Table({user, meetingsReceived
         
         
         //stating HH to hh will give you 12h format
-        const st = moment(newsd2).set({h: startTimeHours, m: startTimeMins, s: startTimeSecs}).format('DD-MM-YYYY HH:mm:ss')
-        const ct = moment(fullDateNow).format('DD-MM-YYYY HH:mm:ss');
-        const et = moment(newed2).set({h: expiryTimeHours, m: expiryTimeMins, s: expiryTimeSecs}).format('DD-MM-YYYY HH:mm:ss')
+        let st0 = moment(newsd2).set({h: startTimeHours, m: startTimeMins, s: startTimeSecs}).format('DD-MM-YYYY HH:mm:ss')
+        let ct0 = moment(fullDateNow).format('DD-MM-YYYY HH:mm:ss');
+        let et0 = moment(newed2).set({h: expiryTimeHours, m: expiryTimeMins, s: expiryTimeSecs}).format('DD-MM-YYYY HH:mm:ss')
      
 
-        console.log("Starting Time Date", st)
-        console.log("Current Time Date", ct)
-        console.log("Expiry Time Date", et)
+        console.log("Starting Time Date", st0)
+        console.log("Current Time Date", ct0)
+        console.log("Expiry Time Date", et0)
+        let st = new Date(newsd2).getTime();
+        let ct = new Date (fullDateNow).getTime();
+        let et = new Date(newed2).getTime();
+  
 
+        console.log(new Date(newed2))
         if ((ct <= et) && (ct >= st)){
           setError("")
           setSuccess("Starting Meeting..")
@@ -437,7 +442,6 @@ export default function Candidate_Schedule_Meeting_Table({user, meetingsReceived
     }
     
   };
-
 
   const onSubmit = async (e) =>{
     await axios.post("/user/compare-password-by-meetingId",{meetingId, password: value, user}).then((res)=>{
@@ -552,6 +556,20 @@ export default function Candidate_Schedule_Meeting_Table({user, meetingsReceived
                   .map((meeting, index) => {
                     const isItemSelected = isSelected(meeting?._id);
                     const labelId = `enhanced-table-checkbox-${index}`;
+                    console.log("meeting ended",meeting?.ended)
+                    console.log("meeting started",meeting?.started)
+                    let button;
+                    if (meeting?.ended === 1) {
+                      button = 
+                        <Link to = {`/meetings/see-candidate-report/${meeting?._id}`}>
+                          <span class="material-icons md-25 three__icons" disabled = {true}>poll</span>
+                        </Link>
+                    } else if (meeting?.started === 1) {
+                      button = <i class="fa fa-phone w3-large quiz__font__icons" aria-hidden="true" onClick={() => handleClickOpen(meeting)}></i>
+                    }
+                    else if(meeting?.started === 0){
+                      button = <i class="fas fa-hourglass-start w3-large quiz__font__icons" aria-hidden="true" disabled = {true} ></i>
+                    }
                     return (   
                       <TableRow
                         hover
@@ -574,23 +592,9 @@ export default function Candidate_Schedule_Meeting_Table({user, meetingsReceived
                         <TableCell align="right">{moment(meeting?.expiry_date, 'YYYY-MM-DD hh:mm:ss').format('MM-DD-YYYY')}</TableCell>
                        
 
-                        <TableCell align="right">
-                   
-                          {
-                            meeting?.started === 1 ? (
-                              <>                             
-                               <i class="fa fa-phone quiz__font__icons" aria-hidden="true" onClick={() => handleClickOpen(meeting)}></i>
-                              </>
-                            ) : (
-                              <>
-                                <i class="fas fa-hourglass-start quiz__font__icons" aria-hidden="true" disabled = {true} ></i>
-                              </>
-                            )
-                          }                  
-                          
+                        <TableCell align="right">                 
+                          {button}                  
 
-                          
-   
                         </TableCell>
                         <TableCell align="right"></TableCell>
                       
