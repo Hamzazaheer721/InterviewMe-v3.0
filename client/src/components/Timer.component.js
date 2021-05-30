@@ -60,32 +60,27 @@ function Timer(props) {
     >
       <div
         style={{
-          background: "rgb(26, 26, 26, 0.5)",
+
           color: "white",
 
-          padding: "2% 2% 2% 2%",
-          borderRadius: "8px",
+
         }}
       >
         <h1 style={{ fontSize: "2.5em" }}>{mins}</h1>
       </div>
       <div
         style={{
-          background: "rgb(26, 26, 26, 0.5)",
+ 
           color: "white",
 
-          padding: "2% 2% 2% 2%",
-          borderRadius: "8px",
         }}
       >
         <h1 style={{ fontSize: "2.5em" }}>:</h1>
       </div>
       <div
         style={{
-          background: "rgb(26, 26, 26, 0.5)",
           color: "white",
-          padding: "2% 2% 2% 2%",
-          borderRadius: "8px",
+
         }}
       >
         <h1 style={{ fontSize: "2.5em" }}>{secs}</h1>

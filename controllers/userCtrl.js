@@ -712,12 +712,15 @@ const userCtrl = {
             // console.log(interviewer)
             const interviewerId = mongoose.Types.ObjectId(interviewer._id);
             console.log("madeBy: ",interviewerId)
-            const doc = await Meeting.find({ madeBy: mongoose.Types.ObjectId(interviewer._id) }).sort("-created").exec();
+            const doc = await Meeting.findOne({ madeBy: mongoose.Types.ObjectId(interviewer._id) }).sort("-created").exec();
                 if (!doc) {
                     console.log("document not found")
                     res.status(400).json({msg: "Meeting not found"})
+                }
+                else{
+                    res.send(doc)
                 }  
-            return res.send(doc);
+            ;
         } catch (err) {
             return res.status(500).json({msg: err.message})
         }

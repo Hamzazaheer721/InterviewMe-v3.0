@@ -141,7 +141,7 @@ function Navbar() {
                   </NavItem>
                 )
               } 
-              {
+              {/* {
                 isLogged && location.pathname === "/main-menu" ? (
                   <NavItem>
                     <NavLinks to='/home' onClick={closeMobileMenu}>
@@ -151,20 +151,16 @@ function Navbar() {
                 ) : (
                   null
                 )
-              }
+              } */}
               {/* <NavItem>
                 <NavLinks to='/home' onClick={closeMobileMenu}>
                   Home
                 </NavLinks>
             </NavItem> */}
               {
-                isLogged ? (
-                  <NavItem>
-                      <NavLinks to='/main-menu' onClick={closeMobileMenu}>
-                        Main Menu
-                    </NavLinks>
-                  </NavItem>
-                ) : (
+                
+                
+                !isLogged &&(
                   <>
                 <NavItem>
                   <NavLinks to='/services' onClick={closeMobileMenu}>

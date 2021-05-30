@@ -37,7 +37,7 @@ function Taketest({user, isAdmin, isLogged}) {
         });
       })
       .catch((err) => {
-        alert(err.response.data.message);
+        alert(err);
       });
   };
 

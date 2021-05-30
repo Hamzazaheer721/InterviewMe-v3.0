@@ -12,7 +12,13 @@ import Loading from './Loading';
 import EnhancedTable from "./EnhancedTable";
 import EnhancedTable2 from "./EnahancedTable2";
 import Admin_Quiz_Table from "./Admin_Quiz_Table";
-
+import { makeStyles } from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
 
 const topics = [
   { id: 1, name: "<--select category-->" },
@@ -41,6 +47,17 @@ const topics = [
   { id: 31, name: "Entertainment: Japanese Anime & Manga" },
   { id: 32, name: "Entertainment: Cartoon & Animations" },
 ];
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+  },
+  title: {
+    flexGrow: 1,
+  },
+}));
 
 Modal.setAppElement("#root");
 function Dashboard({user, isAdmin}) {
@@ -53,7 +70,7 @@ function Dashboard({user, isAdmin}) {
   const [time, settime] = useState("");
   const [expiry, setexpiry] = useState(new Date());
   const [loading, setLoading] = useState(true);
-
+  const classes = useStyles();
   const options = {
     headers: {
       "Content-Type": "application/json",
@@ -110,13 +127,15 @@ function Dashboard({user, isAdmin}) {
 
   return (
     <React.Fragment>
-    <div>
-        <h1
-          className={styles.heading}
-          style={{ background: "white", fontSize: "2em", padding: "2%" }}
-        >
-          Welcome {user.name}
-        </h1>
+        <div className={classes.root}>
+        <AppBar position="static">
+          <Toolbar>
+            
+            <Typography variant="h6" className={classes.title}>
+              Welcome {user?.name}
+            </Typography>
+          </Toolbar>
+        </AppBar>
       </div>
       <button
         className={styles.buttons}

@@ -115,6 +115,7 @@ function Call() {
         setLoading(false)
       }).catch((err) => {
         alert(err.response.data.msg)
+        history_2.push('/')
       });
     };
     useEffect(()=>{
@@ -529,7 +530,7 @@ function Call() {
               </div>
 
               <div  className="main__controls__button main__video__button">
-                {/* <i className= {playStop_btn_class} onClick = {playStop}></i> */}
+                {/* {/* <i className= {playStop_btn_class} onClick = {playStop}></i> */}
                 {enableVideo ? (
                   <>
                     <VideocamIcon  onClick = {playStop} />
@@ -539,7 +540,7 @@ function Call() {
                   <VideocamOffIcon className = "stop" onClick = {playStop}/>
                   </>
                 )}
-                <span> {enableVideo ? "Stop Video" : "Play Video" } </span>
+                <span> {enableVideo ? "Stop Video" : "Play Video" } </span> */}
                 
               </div>
             </div>
