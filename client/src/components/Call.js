@@ -573,6 +573,19 @@ function Call() {
             
               
               <div class="main__controls__block">
+
+                {
+                  user?.role == 0 && (
+                    <>
+                      <Link to = {`/quiz/attempt-quiz`}>
+                        <div class="main__controls__button" >
+                            <i  class="far fa-newspaper"></i>
+                            <span class= "leave__meeting"  >Attempt Test</span>
+                        </div>
+                      </Link>    
+                    </>
+                  )
+                }
                 {
                   isAdmin && (
                     <div class="main__controls__button" onClick = {reloadVideo}>

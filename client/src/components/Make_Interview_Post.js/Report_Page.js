@@ -80,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Report_Page({user}) {
 
     const {register, handleSubmit} = useForm();
- 
+    const history = useHistory()
     const {id} = useParams();
 
     const classes = useStyles();
@@ -100,7 +100,16 @@ export default function Report_Page({user}) {
             console.log("Report : ",res.data)
             setLoading(false);
         }).catch((err) => {
-           console.log("error", err)
+           if(err.response.data.msg === false){
+               if (user?.role === 0 ){
+                    history.push('/meetings/see-meetings-schedule-for-candidate')
+                    alert("Result is not announced yet")
+               }
+               else{
+                   history.push('/meetings/see-schedule-meeting')
+                   alert("Result couldn't be saved due to network error")
+               }
+           }
         });
 
         

@@ -521,14 +521,6 @@ const userCtrl = {
 
             const newDateExpiry = new Date(expiry_date)
             expiry_date = new Date(newDateExpiry.getTime() + (5 * 60 * 60 * 1000)) //converting into pakistani timezone
-            // console.log("Expiry date after: ", expiry_date)
-
-            // const newStartTime = new Date(start_time)
-            // start_time = new Date(newStartTime.getTime() + (5 * 60 * 60 * 1000)) //converting into pakistani timezone
-            // // console.log("Start date after: ", start_date)
-
-            // const newExpiryTime = new Date(expiry_time)
-            // expiry_time = new Date(newExpiryTime.getTime() + (5 * 60 * 60 * 1000)) //converting into pakistani timezone
            
             const passwordHash = await bcrypt.hash(password, 12);
             
@@ -574,7 +566,7 @@ const userCtrl = {
             const toName = candidate_user?.name;
             const sentByName = interviewer?.user?.name;
             const button_url = `http://localhost:3000/meetings/join-room/${meetingId}`           
-            const message = "Please join the meeting with following Id"
+            const message = "Please join the meeting by pressing on following buttton. Enter Test id: ${testid} to attempt test"
             await sendEmailToCandidate(toEmail, toName, sentByName, button_url, message);
 
             await newMeeting.save()
@@ -2012,7 +2004,7 @@ const userCtrl = {
             const doc = await Report.findOne({ meeting: mongoose.Types.ObjectId(req.body.meetingId) }).populate('meeting interviewer_user candidate_user interviewer candidate').sort("-created").exec();
                 if (!doc) {
                     console.log("document not found")
-                    res.status(400).json({msg: "Result not found"})
+                    res.status(400).json({msg: false})
                 }
                 else{
                     return res.send(doc);

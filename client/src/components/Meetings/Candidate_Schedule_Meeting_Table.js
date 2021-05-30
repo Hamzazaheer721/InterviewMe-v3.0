@@ -392,7 +392,7 @@ export default function Candidate_Schedule_Meeting_Table({user, meetingsReceived
         const startTimeMins = new Date(meeting?.start_time).getMinutes();
         const startTimeSecs = new Date(meeting?.start_time).getSeconds();
         let newsd = new Date(StringSDate);
-        newsd.setDate(startDate);       
+        newsd.setDate(startDate);     
         let newsd2 = new Date(newsd.getTime() - (5 * 60 * 60 * 1000)) //because we were saving start_date and expiry_date by adding 5 hours
 
 
@@ -404,7 +404,7 @@ export default function Candidate_Schedule_Meeting_Table({user, meetingsReceived
         let newed = new Date(StringEDate)
         newed.setDate(expiryDate)
         let newed2 = new Date(newed.getTime() - (5 * 60 * 60 * 1000)) //because we were saving start_date and expiry_date by adding 5 hours
-        
+
         
         //stating HH to hh will give you 12h format
         let st0 = moment(newsd2).set({h: startTimeHours, m: startTimeMins, s: startTimeSecs}).format('DD-MM-YYYY HH:mm:ss')
@@ -412,16 +412,32 @@ export default function Candidate_Schedule_Meeting_Table({user, meetingsReceived
         let et0 = moment(newed2).set({h: expiryTimeHours, m: expiryTimeMins, s: expiryTimeSecs}).format('DD-MM-YYYY HH:mm:ss')
      
 
-        console.log("Starting Time Date", st0)
-        console.log("Current Time Date", ct0)
-        console.log("Expiry Time Date", et0)
-        let st = new Date(newsd2).getTime();
-        let ct = new Date (fullDateNow).getTime();
-        let et = new Date(newed2).getTime();
-  
+        // console.log("Starting Time Date", st0)
+        // console.log("Current Time Date", ct0)
+        // console.log("Expiry Time Date", et0)
+        const parseHours = parseInt(startTimeHours);
+        let st = new Date(newed2);
+        st.setHours(parseInt(startTimeHours)) 
+        st.setMinutes(parseInt(startTimeMins))
+        st.setSeconds(parseInt(startTimeSecs))
+        st = st.getTime();
 
-        console.log(new Date(newed2))
-        if ((ct <= et) && (ct >= st)){
+        let ct = new Date (fullDateNow)
+        console.log("ct in utc ",ct)
+        ct = ct.getTime();
+
+        let et = new Date(newsd2)
+        et.setHours(parseInt(expiryTimeHours)) 
+        et.setMinutes(parseInt(expiryTimeMins))
+        et.setSeconds(parseInt(expiryTimeSecs))
+        console.log("et in utc ",et)
+        et = et.getTime();
+
+        
+        // console.log("Starting Time Date", st)
+        // console.log("Current Time Date", ct)
+        // console.log("Expiry Time Date", et)
+        if ((+ct <= +et) && (+ct >= +st)){
           setError("")
           setSuccess("Starting Meeting..")
           setMeetingId(meeting?._id);
