@@ -101,13 +101,6 @@ const dashRoutes = [
         component: EnhancedTable2 
       },
 
-      {
-        path: "/posts/get-CV-posts",
-        name: "Check CVs",
-        mini: "CCV",
-        component: Profile
-      },
-
     ]
   },
   // {

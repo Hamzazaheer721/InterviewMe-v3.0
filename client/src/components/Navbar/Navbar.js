@@ -158,8 +158,7 @@ function Navbar() {
                 </NavLinks>
             </NavItem> */}
               {
-                
-                
+
                 !isLogged &&(
                   <>
                 <NavItem>
